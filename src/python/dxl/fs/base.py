@@ -4,6 +4,7 @@ import fs.base
 import fs.osfs
 from .path import Path
 
+from .conf import mc
 
 # class DefaultFilesystem:
 #     fs_maker_pre = None
@@ -89,11 +90,15 @@ class FileSystem:
     """
 
     def __init__(self, filesystem=None, base_path='.'):
-        self.filesystem = filesystem
-        self.base_path = base_path
+        if isinstance(filesystem, FileSystem):
+            self.filesystem = filesystem.filesystem
+            self.base_path = filesystem.base_path
+        else:
+            self.filesystem = filesystem
+            self.base_path = base_path
 
     def _fs_args(self, base_path=None):
-        import fs
+        import fs.memoryfs
         if self.filesystem == fs.memoryfs.MemoryFS:
             return ()
         else:
@@ -120,11 +125,26 @@ class FileSystem:
         except Exception as e:
             raise e
 
+    @property
+    def info(self):
+        """
+        Returns Dict of basic types or str, i.e. able to serialized by JSON.
+        """
+        with self.open() as fs:
+            return str(fs)
+
 
 class ObjectOnFileSystem:
     def __init__(self, filesystem: FileSystem, path: Path):
-        self.filesystem = filesystem
+        if filesystem is None:
+            filesystem = mc.default_filesystem
+        self.filesystem = FileSystem(filesystem)
         self.path = Path(path)
+
+    @property
+    def info(self):
+        return {'filesystem': self.filesystem.info,
+                'path': self.path.s}
 
     def exists(self):
         with self.filesystem.open() as fs:

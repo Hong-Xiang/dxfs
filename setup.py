@@ -10,6 +10,7 @@ setup(name='dxl-dxpy-dxfs',
       package_dir = {'': 'src/python'},
       install_requires=[
           'click',
+          'rx',
       ],
       scripts=['src/cli/dxfs.py'],
       namespace_packages = ['dxl'],

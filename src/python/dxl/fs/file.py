@@ -1,31 +1,36 @@
-from .base import FileSystem
+from .base import ObjectOnFileSystem, FileSystem
 from .path import Path
-from .fsauto import FileSystemAuto
+import fs
+from .conf import mc
 
 
-class File:
+class File(ObjectOnFileSystem):
     """
     Representation of File.
     """
 
-    def __init__(self, path: Path, filesystem: fs.base.FS=None):
-        self.path = Path(path)
-        self.fs = filesystem
+    def __init__(self, path: Path, filesystem: FileSystem=None):
+        super().__init__(filesystem, path)
 
-    def exists(self) -> bool:
-        with FileSystemAuto(self.fs) as fs:
-            return fs.exists(self.path.s) and fs.isfile(self.path.s)
+    def name(self):
+        return self.path.n
+
+    def suffix(self):
+        return self.path.suffix
 
     def load(self) -> 'File':
+        """
+        Returns:
+
+        - contents loaded by assuming file as binary str.
+        """
         if not self.exists():
             raise FileNotFoundError(self.path.abs)
-        if depth == 0:
-            return
-        with FS(self.fs) as fs:
-            with fs.open(self.path.abs, 'rb') as fin:
-                self.contents = fin.read()
+        with self.filesystem.open() as fs:
+            with fs.open(self.path.s, 'rb') as fin:
+                return fin.read()
 
-    def save(self, data):
-        with FS(self.fs) as fs:
-            with fs.open(self.path.abs, 'wb') as fout:
-                self.contents = fout.write(data)
+    def save(self, data: str):
+        with self.filesystem.open() as fs:
+            with fs.open(self.path.s, 'wb') as fout:
+                return fout.write(data)

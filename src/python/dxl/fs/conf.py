@@ -5,4 +5,4 @@ class Config:
     default_filesystem = OSFS
 
 
-c = Config()
+mc = Config()
