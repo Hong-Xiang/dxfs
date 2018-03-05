@@ -44,3 +44,8 @@ class TestObjectOnFileSystem(unittest.TestCase):
         afs = FileSystem(mfs)
         o = ObjectOnFileSystem(afs, 'test.txt')
         self.assertFalse(o.exists())
+
+    def test_match(self):
+        mfs = MemoryFS()
+        o = ObjectOnFileSystem(mfs, 'sub1')
+        self.assertTrue(o.match(['sub*']))

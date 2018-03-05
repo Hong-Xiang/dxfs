@@ -149,3 +149,11 @@ class ObjectOnFileSystem:
     def exists(self):
         with self.filesystem.open() as fs:
             return fs.exists(self.path.s)
+
+    def match(self, patterns):
+        import fs.errors
+        with self.filesystem.open() as sfs:
+            try:
+                return sfs.match(patterns, sfs.getsyspath(self.path.s))
+            except fs.errors.NoSysPath:
+                return sfs.match(patterns, self.path.s)
