@@ -1,6 +1,6 @@
 import unittest
 from fs.memoryfs import MemoryFS
-from dxl.fs.directory import Directory
+from dxl.fs.directory import Directory, match_directory, match_file
 
 
 class TestDirectory(unittest.TestCase):
@@ -27,8 +27,7 @@ class TestDirectory(unittest.TestCase):
         mfs.touch('test_file.txt')
         mfs.makedir('test_dir')
         d = Directory('.', mfs)
-        result = []
-        d.listdir().subscribe(result.append)
+        result = d.listdir()
         self.assertEqual(len(result), 2)
         cdir = None
         cfile = None
@@ -44,17 +43,15 @@ class TestDirectory(unittest.TestCase):
 
     def test_list_only_matched_dirs(self):
         mfs = MemoryFS()
-        mfs = MemoryFS()
         mfs.touch('test.txt')
         for i in range(2):
             mfs.makedir('sub{}'.format(i))
         mfs.makedir('foo')
         d = Directory('.', mfs)
-        result = []
-        (d.listdir()
-         .filter(lambda o: isinstance(o, Directory))
-         .filter(lambda d: d.match(['sub*']))
-         .subscribe(result.append))
+        result = (d.listdir_as_observable()
+                  .filter(lambda o: isinstance(o, Directory))
+                  .filter(lambda d: d.match(['sub*']))
+                  .to_list().to_blocking().first())
         self.assertEqual(len(result), 2)
         for o in result:
             self.assertIsInstance(o, Directory)
@@ -62,15 +59,26 @@ class TestDirectory(unittest.TestCase):
         self.assertIn('sub0', paths)
         self.assertIn('sub1', paths)
 
-    # def test_check_pos_deffac(self):
-    #     assert fi.Directory.check(self.root + '/sub1', FileSystem)
-
-    # def test_check_neg(self):
-    #     assert not fi.Directory.check(self.root + '/tmp.txt', FileSystem)
-
-    # def test_init_check_fail(self):
-    #     try:
-    #         fi.Directory(self.root + '/sub3', FileSystem, fi.FileFactory)
-    #         self.fail("FileNotFoundOrWrongTypeError not thrown.")
-    #     except fi.FileNotFoundOrWrongTypeError as e:
-    #         assert True
+    def test_copy_files(self):
+        mfs = MemoryFS()
+        mfs.touch('txt1.txt')
+        mfs.touch('txt2.txt')
+        mfs.makedir('sub1')
+        mfs.makedir('sub2')
+        new_files = ['sub1/txt1.txt', 'sub1/txt2.txt',
+                     'sub2/txt1.txt', 'sub2/txt2.txt']
+        for n in new_files:
+            self.assertFalse(mfs.exists(n))
+        d = Directory('.', mfs)
+        targets = d.listdir_as_observable().filter(match_directory(['sub*']))
+        sources = d.listdir_as_observable().filter(match_file(['txt*']))
+        sources.subscribe(lambda f: print(f.path.s))
+        sources_list = []
+        sources.subscribe(sources_list.append)
+        results = (targets.flat_map(lambda d: d.sync(sources))
+                   .to_list()
+                   .to_blocking()
+                   .first())
+        self.assertEqual(len(results), 4)
+        for n in new_files:
+            self.assertTrue(mfs.exists(n))

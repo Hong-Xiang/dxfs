@@ -157,3 +157,6 @@ class ObjectOnFileSystem:
                 return sfs.match(patterns, sfs.getsyspath(self.path.s))
             except fs.errors.NoSysPath:
                 return sfs.match(patterns, self.path.s)
+
+    def copy_to(self, target_path):
+        raise NotImplementedError

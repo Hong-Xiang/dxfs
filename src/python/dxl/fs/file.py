@@ -48,3 +48,8 @@ class File(ObjectOnFileSystem):
             if not fs.isfile(self.path.s):
                 raise NotAFileError(self.path.s)
         return result
+
+    def copy_to(self, target_path: Path):
+        with self.filesystem.open() as fs:
+            fs.copy(self.path.s, target_path.s)
+        return File(target_path, self.filesystem)
