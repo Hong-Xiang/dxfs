@@ -86,3 +86,12 @@ class TestPath(unittest.TestCase):
         ops = ['a', 'a/b', '/a/b', './a', '/a/b']
         subtests(self, ips, ops,
                  lambda xi, xo: self.assertTrue(Path(xi) == Path(xo)))
+
+    def test_dot(self):
+        self.assertEqual(Path('.').s, '')
+
+    def test_join_dot(self):
+        self.assertEqual((Path('.') / 'a').s, 'a')
+
+    def test_empty_protocol(self):
+        self.assertEqual(Path('a', '').s, 'a')

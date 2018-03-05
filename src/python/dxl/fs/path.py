@@ -47,7 +47,7 @@ class Path:
 
     def __init__(self, path, protocol=None):
         if protocol is not None:
-            path = self._unified_protocol(protocol)
+            path = self._unified_protocol(protocol) + path
         self._p = self._unified_path(path)
 
     @property
