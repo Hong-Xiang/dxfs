@@ -28,7 +28,7 @@ class Directory(ObjectOnFileSystem):
                     results.append(File(p, self.filesystem))
                 else:
                     results.append(Directory(p, self.filesystem))
-            return results
+            return tuple(results)
 
     def listdir_as_observable(self):
         return rx.Observable.from_(self.listdir(),

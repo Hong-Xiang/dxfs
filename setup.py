@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 setup(name='dxl-dxpy-dxfs',
-      version='0.1.1',
+      version='0.1.3',
       description='File system library.',
       url='https://github.com/Hong-Xiang/dxl',
       author='Hong Xiang',
