@@ -4,6 +4,11 @@ import fs
 from .conf import mc
 
 
+class NotAFileError(Exception):
+    def __init__(self, path: str):
+        super().__init__("{} is not a file.".format(path))
+
+
 class File(ObjectOnFileSystem):
     """
     Representation of File.
@@ -34,3 +39,12 @@ class File(ObjectOnFileSystem):
         with self.filesystem.open() as fs:
             with fs.open(self.path.s, 'wb') as fout:
                 return fout.write(data)
+
+    def exists(self):
+        result = super().exists()
+        if not result:
+            return result
+        with self.filesystem.open() as fs:
+            if not fs.isfile(self.path.s):
+                raise NotAFileError(self.path.s)
+        return result
