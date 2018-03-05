@@ -92,6 +92,16 @@ class FileSystem:
         self.filesystem = filesystem
         self.base_path = base_path
 
+    def _fs_args(self, base_path=None):
+        import fs
+        if self.filesystem == fs.memoryfs.MemoryFS:
+            return ()
+        else:
+            if base_path is None:
+                return (self, base_path,)
+            else:
+                return (base_path,)
+
     @contextmanager
     def open(self, base_path=None) -> fs.base.FS:
         """
@@ -105,9 +115,7 @@ class FileSystem:
                         "Argument base_path must be non for instanced filesystem.")
                 yield self.filesystem
             else:
-                if base_path is None:
-                    base_path = self.base_path
-                with self.filesystem(base_path) as fs_instance:
+                with self.filesystem(*self._fs_args(base_path)) as fs_instance:
                     yield fs_instance
         except Exception as e:
             raise e

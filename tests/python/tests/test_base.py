@@ -17,7 +17,13 @@ class TestFileSystem(unittest.TestCase):
         with self.assertRaises(FilesystemClosed):
             with fs.open():
                 pass
+    
+    def test_by_class(sefl):
+        fs = FileSystem(MemoryFS)
+        with fs.open():
+            pass
 
 
 class TestObjectOnFileSystem(unittest.TestCase):
-    pass
+    def test_exist(self):
+       pass 
