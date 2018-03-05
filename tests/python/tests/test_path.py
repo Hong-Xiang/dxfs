@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock
-from dxpy.filesystem2.path import Path
+from dxl.dxfs.path import Path
 
 
 def subtests(tc: unittest.TestCase, inputs, outputs, func, offset=0):

@@ -3,12 +3,10 @@ import unittest
 from unittest.mock import MagicMock, patch
 import pathlib
 import json
-from dxpy.file_system.path import Path
-import dxpy.file_system.file as fi
-from dxpy.file_system.file_system import FileSystem
+from dxl.dxfs.path import Path
+import dxpy.dxfs.file as fi
+from dxl.dxfs.file_system import FileSystem
 import tempfile
-import shutil
-
 def _is_dir_made_true(path):
     return True
 
