@@ -42,6 +42,26 @@ class TestDirectory(unittest.TestCase):
         self.assertEqual(cdir.path.n, 'test_dir')
         self.assertEqual(cfile.path.n, 'test_file.txt')
 
+    def test_list_only_matched_dirs(self):
+        mfs = MemoryFS()
+        mfs = MemoryFS()
+        mfs.touch('test.txt')
+        for i in range(2):
+            mfs.makedir('sub{}'.format(i))
+        mfs.makedir('foo')
+        d = Directory('.', mfs)
+        result = []
+        (d.listdir()
+         .filter(lambda o: isinstance(o, Directory))
+         .filter(lambda d: d.match(['sub*']))
+         .subscribe(result.append))
+        self.assertEqual(len(result), 2)
+        for o in result:
+            self.assertIsInstance(o, Directory)
+        paths = [o.path.s for o in result]
+        self.assertIn('sub0', paths)
+        self.assertIn('sub1', paths)
+
     # def test_check_pos_deffac(self):
     #     assert fi.Directory.check(self.root + '/sub1', FileSystem)
 

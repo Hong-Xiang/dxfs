@@ -23,10 +23,6 @@ class Directory(ObjectOnFileSystem):
             paths = [self.path / c for c in children]
             results = []
             for p in paths:
-                print('paths', p.s)
-                print(p)
-                print('inner', fs.isfile('test_file.txt'))
-                print(fs.isfile(p.s))
                 if fs.isfile(p.s):
                     results.append(File(p, self.filesystem))
                 else:
