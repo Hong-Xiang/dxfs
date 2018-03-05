@@ -9,6 +9,7 @@ class TestDirectory(unittest.TestCase):
         mfs.makedir('test')
         d = Directory('test', mfs)
         self.assertTrue(d.exists())
+    
 
     # def test_check_pos_deffac(self):
     #     assert fi.Directory.check(self.root + '/sub1', FileSystem)
