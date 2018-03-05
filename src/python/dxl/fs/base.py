@@ -113,12 +113,11 @@ class FileSystem:
             raise e
 
 
-# class ObjectOnFileSystem:
+class ObjectOnFileSystem:
+    def __init__(self, filesystem: FileSystem, path: Path):
+        self.filesystem = filesystem
+        self.path
 
-#     def __init__(self, filesystem: FileSystem, path: Path):
-#         self.filesystem_maker = filesystem_maker
-#         self.path
-
-#     @contextmanager
-#     def filesystem(self):
-#         if self.filesyste
+    def exists(self):
+        with self.filesystem.open() as fs:
+            return fs.exists(self.path.s)

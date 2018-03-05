@@ -1,5 +1,5 @@
 import unittest
-from dxl.dxfs.base import FileSystem
+from dxl.fs.base import FileSystem, ObjectOnFileSystem
 from fs.errors import FilesystemClosed
 from fs.memoryfs import MemoryFS
 
@@ -17,3 +17,7 @@ class TestFileSystem(unittest.TestCase):
         with self.assertRaises(FilesystemClosed):
             with fs.open():
                 pass
+
+
+class TestObjectOnFileSystem(unittest.TestCase):
+    pass
