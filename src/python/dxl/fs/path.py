@@ -59,7 +59,10 @@ class Path:
         return self._divide_protocol(self._p)[1]
 
     def raw_path(self) -> 'Path':
-        return Path(self.raw, self.protocol)
+        """
+        Returns raw path object, i.e. no protocol.
+        """
+        return Path(self.raw, None)
 
     @property
     def s(self) -> str:
@@ -68,6 +71,9 @@ class Path:
 
     @property
     def a(self) -> str:
+        """
+        Returns absolute path in str.
+        """
         return fp.abspath(self.s)
 
     def absolute(self) -> 'Path':
