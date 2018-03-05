@@ -103,7 +103,7 @@ class FileSystem:
             return ()
         else:
             if base_path is None:
-                return (self, base_path,)
+                return (self.base_path,)
             else:
                 return (base_path,)
 
@@ -157,6 +157,10 @@ class ObjectOnFileSystem:
                 return sfs.match(patterns, sfs.getsyspath(self.path.s))
             except fs.errors.NoSysPath:
                 return sfs.match(patterns, self.path.s)
+
+    def system_path(self):
+        with self.filesystem.open() as fs:
+            return Path(fs.getsyspath(self.path.s)).s
 
     def copy_to(self, target_path):
         raise NotImplementedError

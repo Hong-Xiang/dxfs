@@ -82,3 +82,12 @@ class TestDirectory(unittest.TestCase):
         self.assertEqual(len(results), 4)
         for n in new_files:
             self.assertTrue(mfs.exists(n))
+
+    def test_osfs(self):
+        d = Directory('/some/random/paths')
+        self.assertFalse(d.exists())
+    
+    def test_system_path(self):
+        from fs.osfs import OSFS
+        d = Directory('/tmp', OSFS('/'))
+        self.assertEqual(d.system_path(), '/tmp')
