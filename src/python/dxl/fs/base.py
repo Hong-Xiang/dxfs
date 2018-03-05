@@ -124,7 +124,7 @@ class FileSystem:
 class ObjectOnFileSystem:
     def __init__(self, filesystem: FileSystem, path: Path):
         self.filesystem = filesystem
-        self.path
+        self.path = Path(path)
 
     def exists(self):
         with self.filesystem.open() as fs:

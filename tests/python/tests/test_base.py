@@ -17,7 +17,7 @@ class TestFileSystem(unittest.TestCase):
         with self.assertRaises(FilesystemClosed):
             with fs.open():
                 pass
-    
+
     def test_by_class(sefl):
         fs = FileSystem(MemoryFS)
         with fs.open():
@@ -26,4 +26,14 @@ class TestFileSystem(unittest.TestCase):
 
 class TestObjectOnFileSystem(unittest.TestCase):
     def test_exist(self):
-       pass 
+        mfs = MemoryFS()
+        mfs.touch('test.txt')
+        afs = FileSystem(mfs)
+        o = ObjectOnFileSystem(afs, 'test.txt')
+        self.assertTrue(o.exists())
+
+    def test_non_exist(self):
+        mfs = MemoryFS()
+        afs = FileSystem(mfs)
+        o = ObjectOnFileSystem(afs, 'test.txt')
+        self.assertFalse(o.exists())
