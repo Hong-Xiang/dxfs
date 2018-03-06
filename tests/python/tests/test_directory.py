@@ -92,7 +92,7 @@ class TestDirectory(unittest.TestCase):
         d = Directory('/tmp', OSFS('/'))
         self.assertEqual(d.system_path(), '/tmp')
 
-    def test_attch(self):
+    def test_attach(self):
         mfs = MemoryFS()
         d = Directory('test', mfs)
         f = d.attach('filename.txt')
