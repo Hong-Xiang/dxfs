@@ -81,16 +81,16 @@ class ObjectOnFileSystem:
             return fs.exists(self.path.s)
 
     def match(self, patterns):
+        with self.filesystem.open() as sfs:
+            return sfs.match(patterns, self.system_path())
+
+    def system_path(self):
         import fs.errors
         with self.filesystem.open() as sfs:
             try:
-                return sfs.match(patterns, sfs.getsyspath(self.path.s))
+                return Path(sfs.getsyspath(self.path.s)).s
             except fs.errors.NoSysPath:
-                return sfs.match(patterns, self.path.s)
-
-    def system_path(self):
-        with self.filesystem.open() as fs:
-            return Path(fs.getsyspath(self.path.s)).s
+                return self.path.s
 
     def copy_to(self, target_path):
         raise NotImplementedError

@@ -1,5 +1,6 @@
 import unittest
 from fs.memoryfs import MemoryFS
+from fs.tempfs import TempFS
 from dxl.fs.directory import Directory, match_directory, match_file
 from dxl.fs import File
 
@@ -106,3 +107,11 @@ class TestDirectory(unittest.TestCase):
         ds = d.attach_directory('sub')
         self.assertEqual(ds.path.s, 'test/sub')
         self.assertIsInstance(ds, Directory)
+
+    def test_remove(self):
+        with TempFS() as tfs:
+            tfs.makedir('test')
+            d = Directory('test', tfs)
+            self.assertTrue(tfs.exists('test'))
+            d.remove()
+            self.assertFalse(tfs.exists('test'))
