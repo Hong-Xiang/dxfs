@@ -54,14 +54,17 @@ class Directory(ObjectOnFileSystem):
                                        scheduler=rx.concurrency.ThreadPoolScheduler())
         return result
 
-    def attach(self, filename: str) -> File:
+    def attach_file(self, name: str) -> File:
         """
         Parameters:
 
         - `filename`: 
 
         """
-        return File(self.path / filename, self.filesystem)
+        return File(self.path / name, self.filesystem)
+
+    def attach_directory(self, name: str) -> 'Directory':
+        return Directory(self.path / name, self.filesystem)
 
 
 def match_directory(patterns):

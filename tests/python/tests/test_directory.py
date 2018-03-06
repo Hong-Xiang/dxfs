@@ -1,6 +1,7 @@
 import unittest
 from fs.memoryfs import MemoryFS
 from dxl.fs.directory import Directory, match_directory, match_file
+from dxl.fs import File
 
 
 class TestDirectory(unittest.TestCase):
@@ -92,8 +93,16 @@ class TestDirectory(unittest.TestCase):
         d = Directory('/tmp', OSFS('/'))
         self.assertEqual(d.system_path(), '/tmp')
 
-    def test_attach(self):
+    def test_attach_file(self):
         mfs = MemoryFS()
         d = Directory('test', mfs)
-        f = d.attach('filename.txt')
+        f = d.attach_file('filename.txt')
         self.assertEqual(f.path.s, 'test/filename.txt')
+        self.assertIsInstance(f, File)
+
+    def test_attach_dir(self):
+        mfs = MemoryFS()
+        d = Directory('test', mfs)
+        ds = d.attach_directory('sub')
+        self.assertEqual(ds.path.s, 'test/sub')
+        self.assertIsInstance(ds, Directory)
