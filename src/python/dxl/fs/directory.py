@@ -65,6 +65,10 @@ class Directory(ObjectOnFileSystem):
 
     def attach_directory(self, name: str) -> 'Directory':
         return Directory(self.path / name, self.filesystem)
+    
+    def remove(self):
+        with self.filesystem.open() as fs:
+            fs.removetree(self.path.s)
 
 
 def match_directory(patterns):
