@@ -118,8 +118,21 @@ class TestDirectory(unittest.TestCase):
 
 
 class TestMatchFile(unittest.TestCase):
-    def test_fileter_files(self):
+    def test_filter_files(self):
         with MemoryFS() as mfs:
+            files = ['test1.txt', 'test.txt', 'test2.txt', 'run.txt']
+            for f in files:
+                mfs.touch(f)
+            d = Directory('.', mfs)
+            files_out = (d.listdir_as_observable()
+                         .filter(match_file(['test*']))
+                         .map(lambda f: f.path.s)
+                         .to_list().to_blocking().first())
+            self.assertEqual(sorted(files[:-1]), sorted(files_out))
+
+    def test_filter_files_on_tempfs(self):
+        from fs.tempfs import TempFS
+        with TempFS() as mfs:
             files = ['test1.txt', 'test.txt', 'test2.txt', 'run.txt']
             for f in files:
                 mfs.touch(f)

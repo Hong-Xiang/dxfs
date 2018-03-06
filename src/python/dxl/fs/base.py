@@ -82,7 +82,7 @@ class ObjectOnFileSystem:
 
     def match(self, patterns):
         with self.filesystem.open() as sfs:
-            return sfs.match(patterns, self.system_path())
+            return sfs.match(patterns, self.path.s)
 
     def system_path(self):
         import fs.errors
