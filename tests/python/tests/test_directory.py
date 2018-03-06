@@ -115,3 +115,17 @@ class TestDirectory(unittest.TestCase):
             self.assertTrue(tfs.exists('test'))
             d.remove()
             self.assertFalse(tfs.exists('test'))
+
+
+class TestMatchFile(unittest.TestCase):
+    def test_fileter_files(self):
+        with MemoryFS() as mfs:
+            files = ['test1.txt', 'test.txt', 'test2.txt', 'run.txt']
+            for f in files:
+                mfs.touch(f)
+            d = Directory('.', mfs)
+            files_out = (d.listdir_as_observable()
+                         .filter(match_file(['test*']))
+                         .map(lambda f: f.path.s)
+                         .to_list().to_blocking().first())
+            self.assertEqual(sorted(files[:-1]), sorted(files_out))
