@@ -54,6 +54,15 @@ class Directory(ObjectOnFileSystem):
                                        scheduler=rx.concurrency.ThreadPoolScheduler())
         return result
 
+    def attach(self, filename: str) -> File:
+        """
+        Parameters:
+
+        - `filename`: 
+
+        """
+        return File(self.path / filename, self.filesystem)
+
 
 def match_directory(patterns):
     if isinstance(patterns, str):

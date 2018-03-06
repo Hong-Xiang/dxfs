@@ -86,8 +86,14 @@ class TestDirectory(unittest.TestCase):
     def test_osfs(self):
         d = Directory('/some/random/paths')
         self.assertFalse(d.exists())
-    
+
     def test_system_path(self):
         from fs.osfs import OSFS
         d = Directory('/tmp', OSFS('/'))
         self.assertEqual(d.system_path(), '/tmp')
+
+    def test_attch(self):
+        mfs = MemoryFS()
+        d = Directory('test', mfs)
+        f = d.attach('filename.txt')
+        self.assertEqual(f.path.s, 'test/filename.txt')
