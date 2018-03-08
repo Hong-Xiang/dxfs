@@ -35,7 +35,9 @@ class File(ObjectOnFileSystem):
             with fs.open(self.path.s, 'rb') as fin:
                 return fin.read()
 
-    def save(self, data: str):
+    def save(self, data: 'str or bytes'):
+        if isinstance(data, str):
+            data = data.encode()
         with self.filesystem.open() as fs:
             with fs.open(self.path.s, 'wb') as fout:
                 return fout.write(data)
