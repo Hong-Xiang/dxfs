@@ -116,6 +116,15 @@ class TestDirectory(unittest.TestCase):
             d.remove()
             self.assertFalse(tfs.exists('test'))
 
+    def test_makedir(self):
+        mfs = MemoryFS()
+        mfs.makedir('test')
+        d = Directory('test', mfs)
+        result = d.makedir('sub')
+        self.assertTrue(mfs.exists('test/sub'))
+        self.assertIsInstance(result, Directory)
+        self.assertEqual(result.path.s, 'test/sub')
+
 
 class TestMatchFile(unittest.TestCase):
     def test_filter_files(self):
