@@ -53,7 +53,7 @@ class File(ObjectOnFileSystem):
 
     def copy_to(self, target_path: Path):
         with self.filesystem.open() as fs:
-            fs.copy(self.path.s, target_path.s)
+            fs.copy(self.path.s, target_path.s, True)
         return File(target_path, self.filesystem)
 
     def remove(self):
