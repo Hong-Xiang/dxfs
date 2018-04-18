@@ -35,7 +35,9 @@ class File(ObjectOnFileSystem):
             with fs.open(self.path.s, 'rb') as fin:
                 return fin.read()
 
-    def save(self, data: str):
+    def save(self, data: 'str or bytes'):
+        if isinstance(data, str):
+            data = data.encode()
         with self.filesystem.open() as fs:
             with fs.open(self.path.s, 'wb') as fout:
                 return fout.write(data)
@@ -51,5 +53,9 @@ class File(ObjectOnFileSystem):
 
     def copy_to(self, target_path: Path):
         with self.filesystem.open() as fs:
-            fs.copy(self.path.s, target_path.s)
+            fs.copy(self.path.s, target_path.s, True)
         return File(target_path, self.filesystem)
+
+    def remove(self):
+        with self.filesystem.open() as fs:
+            fs.remove(self.path.s)

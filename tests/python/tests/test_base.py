@@ -49,3 +49,8 @@ class TestObjectOnFileSystem(unittest.TestCase):
         mfs = MemoryFS()
         o = ObjectOnFileSystem(mfs, 'sub1')
         self.assertTrue(o.match(['sub*']))
+
+    def test_osfs(self):
+        import fs.osfs
+        o = ObjectOnFileSystem(fs.osfs.OSFS, '/some/random/paths')
+        self.assertFalse(o.exists())

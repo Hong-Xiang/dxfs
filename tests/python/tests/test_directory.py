@@ -1,6 +1,8 @@
 import unittest
 from fs.memoryfs import MemoryFS
+from fs.tempfs import TempFS
 from dxl.fs.directory import Directory, match_directory, match_file
+from dxl.fs import File
 
 
 class TestDirectory(unittest.TestCase):
@@ -82,3 +84,70 @@ class TestDirectory(unittest.TestCase):
         self.assertEqual(len(results), 4)
         for n in new_files:
             self.assertTrue(mfs.exists(n))
+
+    def test_osfs(self):
+        d = Directory('/some/random/paths')
+        self.assertFalse(d.exists())
+
+    def test_system_path(self):
+        from fs.osfs import OSFS
+        d = Directory('/tmp', OSFS('/'))
+        self.assertEqual(d.system_path(), '/tmp')
+
+    def test_attach_file(self):
+        mfs = MemoryFS()
+        d = Directory('test', mfs)
+        f = d.attach_file('filename.txt')
+        self.assertEqual(f.path.s, 'test/filename.txt')
+        self.assertIsInstance(f, File)
+
+    def test_attach_dir(self):
+        mfs = MemoryFS()
+        d = Directory('test', mfs)
+        ds = d.attach_directory('sub')
+        self.assertEqual(ds.path.s, 'test/sub')
+        self.assertIsInstance(ds, Directory)
+
+    def test_remove(self):
+        with TempFS() as tfs:
+            tfs.makedir('test')
+            d = Directory('test', tfs)
+            self.assertTrue(tfs.exists('test'))
+            d.remove()
+            self.assertFalse(tfs.exists('test'))
+
+    def test_makedir(self):
+        mfs = MemoryFS()
+        mfs.makedir('test')
+        d = Directory('test', mfs)
+        result = d.makedir('sub')
+        self.assertTrue(mfs.exists('test/sub'))
+        self.assertIsInstance(result, Directory)
+        self.assertEqual(result.path.s, 'test/sub')
+
+
+class TestMatchFile(unittest.TestCase):
+    def test_filter_files(self):
+        with MemoryFS() as mfs:
+            files = ['test1.txt', 'test.txt', 'test2.txt', 'run.txt']
+            for f in files:
+                mfs.touch(f)
+            d = Directory('.', mfs)
+            files_out = (d.listdir_as_observable()
+                         .filter(match_file(['test*']))
+                         .map(lambda f: f.path.s)
+                         .to_list().to_blocking().first())
+            self.assertEqual(sorted(files[:-1]), sorted(files_out))
+
+    def test_filter_files_on_tempfs(self):
+        from fs.tempfs import TempFS
+        with TempFS() as mfs:
+            files = ['test1.txt', 'test.txt', 'test2.txt', 'run.txt']
+            for f in files:
+                mfs.touch(f)
+            d = Directory('.', mfs)
+            files_out = (d.listdir_as_observable()
+                         .filter(match_file(['test*']))
+                         .map(lambda f: f.path.s)
+                         .to_list().to_blocking().first())
+            self.assertEqual(sorted(files[:-1]), sorted(files_out))

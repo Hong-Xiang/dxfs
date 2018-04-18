@@ -28,7 +28,7 @@ class Directory(ObjectOnFileSystem):
                     results.append(File(p, self.filesystem))
                 else:
                     results.append(Directory(p, self.filesystem))
-            return results
+            return tuple(results)
 
     def listdir_as_observable(self):
         return rx.Observable.from_(self.listdir(),
@@ -53,6 +53,28 @@ class Directory(ObjectOnFileSystem):
             return rx.Observable.from_(result,
                                        scheduler=rx.concurrency.ThreadPoolScheduler())
         return result
+
+    def attach_file(self, name: str) -> File:
+        """
+        Parameters:
+
+        - `filename`: 
+
+        """
+        return File(self.path / name, self.filesystem)
+
+    def attach_directory(self, name: str) -> 'Directory':
+        return Directory(self.path / name, self.filesystem)
+
+    def remove(self):
+        with self.filesystem.open() as fs:
+            fs.removetree(self.path.s)
+
+    def makedir(self, name: str) -> 'Directory':
+        with self.filesystem.open() as fs:
+            raw_path = (self.path / name).s
+            fs.makedir(raw_path)
+            return Directory(raw_path, self.filesystem)
 
 
 def match_directory(patterns):

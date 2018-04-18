@@ -2,7 +2,7 @@ import unittest
 from dxl.fs.path import Path
 from dxl.fs.file import File, NotAFileError
 from fs.memoryfs import MemoryFS
-
+from fs.tempfs import TempFS
 
 class TestFile(unittest.TestCase):
     def test_exist(self):
@@ -22,3 +22,11 @@ class TestFile(unittest.TestCase):
         f = File('test', mfs)
         with self.assertRaises(NotAFileError) as target:
             f.exists()
+
+    def test_remove(self):
+        with TempFS() as tfs:
+            tfs.touch('test')
+            f = File('test', tfs)
+            self.assertTrue(tfs.exists('test'))
+            f.remove()
+            self.assertFalse(tfs.exists('test'))

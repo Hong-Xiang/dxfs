@@ -1,81 +1,11 @@
 from contextlib import contextmanager
 from typing import Callable, TypeVar
+
 import fs.base
 import fs.osfs
-from .path import Path
 
 from .conf import mc
-
-# class DefaultFilesystem:
-#     fs_maker_pre = None
-#     fs_maker_now = None
-
-#     @classmethod
-#     def get(cls) -> FileSystemMaker:
-#         if cls.fs_maker_now is None:
-#             cls.fs_maker_now = OSFS
-#         return cls.fs_maker_now
-
-#     @contextmanager
-#     @classmethod
-#     def set_default(cls, filesystem_maker: Callable[[], FS]):
-#         try:
-#             cls.fs_maker_pre = cls.fs_maker_now
-#             cls.fs_maker_now = filesystem_maker
-#             yield
-
-#         else:
-
-
-# class FileSystemMaker:
-#     def _process_none_filesystem(self, file_system_maker):
-#         if filesystem is not None:
-#             return filesystem
-#         return None
-
-#     def _process_instance_filesystem(self, filesystem: FileSystemLike) -> FileSystemMaker:
-#         from fs.base import FS
-#         if filesystem is None:
-#             filesystem = self._process_none_filesystem()
-#         if isinstance(filesystem, FS):
-#             self.need_close = False
-#             return lambda: filesystem
-#         return filesystem
-
-#     def __init__(self, filesystem_like: TypeVar('FT', FS, Callable[[], FS])):
-#         fs =
-#         self.need_close = True
-
-#     @contextmanager
-#     def __call__(self):
-#         return self.filesystem_maker
-
-
-# class FileSystemAuto:
-#     """
-#     Provide default filesystem for File and Directory
-#     """
-
-#     def __init__(self, fs_or_path=None):
-#         from .configs import c
-#         if fs_or_path is None:
-#             self.fs = c.default_filesystem('/')
-#             self.need_close = True
-#         elif isinstance(fs_or_path, str):
-#             self.fs = config.default_filesystem(fs_or_path)
-#             self.need_close = True
-#         else:
-#             self.fs = fs_or_path
-#             self.need_close = False
-
-#     def __enter__(self):
-#         return self.fs
-
-#     def __exit__(self, type, value, trackback):
-#         if self.need_close:
-#             self.fs.close()
-
-from contextlib import contextmanager
+from .path import Path
 
 
 class FileSystem:
@@ -103,7 +33,7 @@ class FileSystem:
             return ()
         else:
             if base_path is None:
-                return (self, base_path,)
+                return (self.base_path,)
             else:
                 return (base_path,)
 
@@ -151,12 +81,19 @@ class ObjectOnFileSystem:
             return fs.exists(self.path.s)
 
     def match(self, patterns):
+        with self.filesystem.open() as sfs:
+            return sfs.match(patterns, self.path.s)
+
+    def system_path(self):
         import fs.errors
         with self.filesystem.open() as sfs:
             try:
-                return sfs.match(patterns, sfs.getsyspath(self.path.s))
+                return Path(sfs.getsyspath(self.path.s)).s
             except fs.errors.NoSysPath:
-                return sfs.match(patterns, self.path.s)
+                return self.path.s
 
     def copy_to(self, target_path):
+        raise NotImplementedError
+
+    def remove(self):
         raise NotImplementedError
